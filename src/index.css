@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+/* Design tokens. Tailwind v4 reads these straight off @theme, so `bg-surface`,
+   `text-ink-muted`, `border-line` etc. are real utilities. */
+@theme {
+  --color-canvas: oklch(21% 0.015 265);
+  --color-surface: oklch(25% 0.017 265);
+  --color-surface-2: oklch(29% 0.019 265);
+  --color-line: oklch(35% 0.02 265);
+  --color-ink: oklch(96% 0.005 265);
+  --color-ink-muted: oklch(72% 0.018 265);
+  --color-accent: oklch(72% 0.15 200);
+  --color-accent-ink: oklch(20% 0.03 200);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Consolas, monospace;
+}
+
+/* Light theme swaps the same token names, so no component knows which theme it is in.
+   This MUST be a plain :root block, not a nested @theme: Tailwind v4 hoists @theme out
+   of media queries, which silently made the light palette unconditional. Utilities read
+   these through var(), so overriding the same custom properties works correctly. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-canvas: oklch(98.5% 0.003 265);
+    --color-surface: oklch(100% 0 0);
+    --color-surface-2: oklch(96.5% 0.005 265);
+    --color-line: oklch(90% 0.008 265);
+    --color-ink: oklch(23% 0.02 265);
+    --color-ink-muted: oklch(50% 0.02 265);
+    --color-accent: oklch(52% 0.14 200);
+    --color-accent-ink: oklch(99% 0.01 200);
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+
+  /* One visible focus style everywhere, so keyboard users are never lost. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+
+  ::selection {
+    @apply bg-accent text-accent-ink;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-surface;
+  }
+
+  /* Buttons are written out in full rather than composed with @apply, so each class
+     resolves to utilities only. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2
+           text-sm font-medium text-accent-ink transition-colors hover:opacity-90
+           disabled:cursor-not-allowed disabled:opacity-45;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line
+           bg-surface-2 px-4 py-2 text-sm font-medium text-ink transition-colors
+           hover:border-accent/60 disabled:cursor-not-allowed disabled:opacity-45;
+  }
+
+  .btn-chip {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full border border-line
+           bg-surface px-3 py-1.5 text-xs font-medium text-ink-muted transition-colors
+           hover:border-accent/60 hover:text-ink disabled:cursor-not-allowed
+           disabled:opacity-45;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-line bg-surface-2 px-3.5 py-2.5 text-sm
+           text-ink placeholder:text-ink-muted/70 focus:border-accent focus:outline-none;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-ink-muted;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full border border-line bg-surface-2
+           px-2 py-0.5 text-[11px] font-medium text-ink-muted;
+  }
+
+  .prose-reply {
+    @apply text-sm leading-relaxed whitespace-pre-wrap break-words;
+  }
+}
